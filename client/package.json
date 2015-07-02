@@ -1,0 +1,14 @@
+{
+  "name": "etherwalker-client",
+  "version": "0.0.1",
+  "description": "",
+  "main": "client.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "BSD-2-Clause",
+  "dependencies": {
+    "uuid": "~2.0.1"
+  }
+}

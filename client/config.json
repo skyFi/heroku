@@ -1,0 +1,6 @@
+{
+  "localPort": 2080,
+  "localAddress": "127.0.0.1",
+  "remotePort": 8080,
+  "remoteAddress": "127.0.0.1"
+}
