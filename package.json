@@ -1,5 +1,5 @@
 {
-  "name": "etherwalker-client",
+  "name": "etherwalker",
   "version": "0.0.1",
   "description": "",
   "main": "client.js",
@@ -9,6 +9,8 @@
   "author": "",
   "license": "BSD-2-Clause",
   "dependencies": {
-    "uuid": "~2.0.1"
+    "uuid": "~2.0.1",
+    "socket.io": "~1.3.5",
+    "socket.io-client": "~1.3.5"
   }
 }
