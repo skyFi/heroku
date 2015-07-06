@@ -2,7 +2,7 @@
   "clientPort": 2080,
   "clientAddress": "127.0.0.1",
   "serverPort": 8080,
-  "serverAddress": "127.0.0.1",
+  "serverAddress": "0.0.0.0",
   "connectionPoolSize": 10,
   "encryptMethod": "aes-256-ctr",
   "encryptKey": "password-dorwssap"
