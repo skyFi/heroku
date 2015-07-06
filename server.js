@@ -13,20 +13,20 @@ httpServer.listen(config.serverPort, config.serverAddress, function(){
 var io = new Server(httpServer);
 io.of('/').on('connection', function(socket) {
 
-    socket.on('message', function(data, sessionCreated) {
-        sessionCreated(data);
+    socket.on('message', function(namespace, sessionCreated) {
+        sessionCreated(namespace);
 
-        io.of('/' + data).on('connection', function(clientSocket) {
-            console.log("namespace socket is created:" + data);
+        io.of('/' + namespace).on('connection', function(clientSocket) {
+            console.log("namespace socket is created:" + namespace);
             var remoteConnected = false;
             var remoteSocket = null;
 
-            clientSocket.on('message', function(data, remoteConnectSuccess) {
+            clientSocket.on('message', function(clientData, remoteConnectSuccess) {
                 if (!remoteConnected) {
-                    var remotePort = extractRemotePort(data);
-                    var remoteAddr = extractRemoteAddress(data);
+                    var remotePort = extractRemotePort(clientData);
+                    var remoteAddr = extractRemoteAddress(clientData);
 
-                    console.log('connecting to remote: ' +  remoteAddr + ":" +remotePort);
+                    console.log(namespace + ': connecting to remote: ' +  remoteAddr + ":" +remotePort);
                     remoteSocket = net.connect(remotePort, remoteAddr, function() {
                         var buf = new Buffer(10);
                         buf.write("\u0005\u0000\u0000\u0001", 0, 4, "binary");
@@ -35,7 +35,7 @@ io.of('/').on('connection', function(socket) {
 
                         remoteConnected = true;
                         remoteConnectSuccess(buf);
-                        console.log('remote connected: ' +  remoteAddr + ":" +remotePort)
+                        console.log(namespace + ': remote connected: ' +  remoteAddr + ":" +remotePort)
                     });
 
                     remoteSocket.on('data', function(data) {
@@ -43,26 +43,26 @@ io.of('/').on('connection', function(socket) {
                     });
 
                     remoteSocket.on('error', function(e) {
-                        console.log('remote side connection error: ' + e);
+                        console.log(namespace + ': remote side connection error: ' + e);
                         remoteSocket.destroy();
                         clientSocket.disconnect();
                         remoteSocket = null;
                     });
 
                     remoteSocket.on('close', function(){
-                        console.log('remote close connection: ' +  remoteAddr + ":" +remotePort);
+                        console.log(namespace + ': remote close connection: ' +  remoteAddr + ":" +remotePort);
                         remoteConnected = false;
                         clientSocket.disconnect();
                     });
 
                     clientSocket.on('disconnect', function() {
-                        console.log('client close remote connection: ' +  remoteAddr + ":" +remotePort);
+                        console.log(namespace + ': client close remote connection: ' +  remoteAddr + ":" +remotePort);
                         remoteConnected = false;
                         remoteSocket.end();
                         remoteSocket = null;
                     });
                 } else {
-                    remoteSocket.write(data);
+                    remoteSocket.write(clientData);
                 }
             });
         });

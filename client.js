@@ -25,11 +25,11 @@ var localServer = net.createServer(function(socket) {
 
     connectionPool.getConnection().createSession(function(session) {
         session.on('message', function(data){
-            console.log(session.id + ": sending data to client: data length = " + data);
             socket.write(data);
         });
 
         session.on('close', function(){
+            console.log(session.id + ": socket is closed by session")
             socket.end();
         });
 
