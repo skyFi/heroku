@@ -2,6 +2,7 @@ var fs = require('fs');
 var net = require('net');
 var config = JSON.parse(fs.readFileSync('config.json'));
 var ConnectionPool = require('./lib/connection-pool');
+var encryptor = new (require('./encryptor'))(config.encryptMethod, config.encryptKey);
 
 var serverUrl = 'http://' + config.serverAddress + ':' + config.serverPort;
 var connectionPool = new ConnectionPool(serverUrl);
@@ -25,7 +26,7 @@ var localServer = net.createServer(function(socket) {
 
     connectionPool.getConnection().createSession(function(session) {
         session.on('message', function(data){
-            socket.write(data);
+            socket.write(encryptor.decrypt(data));
         });
 
         session.on('close', function(){
@@ -54,11 +55,11 @@ var localServer = net.createServer(function(socket) {
                 });
             } else if (session.state == 'auth') {
                 console.log(session.id + ": is connecting to server side...");
-                session.remoteConnect(data, function(result) {
-                    socket.write(result);
+                session.remoteConnect(encryptor.encrypt(data), function(result) {
+                    socket.write(encryptor.decrypt(result));
                 });
             } else if (session.state == 'transfer'){
-                session.send(data);
+                session.send(encryptor.encrypt(data));
             }
         }
 

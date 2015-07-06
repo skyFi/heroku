@@ -3,6 +3,7 @@ var net = require("net");
 var http = require('http');
 var Server = require('socket.io');
 var config = JSON.parse(fs.readFileSync('config.json'));
+var encryptor = new (require('./encryptor'))(config.encryptMethod, config.encryptKey);
 
 var httpServer = require("http").createServer();
 httpServer.listen(config.serverPort, config.serverAddress, function(){
@@ -17,11 +18,13 @@ io.of('/').on('connection', function(socket) {
         sessionCreated(namespace);
 
         io.of('/' + namespace).on('connection', function(clientSocket) {
-            console.log("namespace socket is created:" + namespace);
             var remoteConnected = false;
             var remoteSocket = null;
 
             clientSocket.on('message', function(clientData, remoteConnectSuccess) {
+                console.log('encrypted client data: \n\r' + clientData);
+                clientData = encryptor.decrypt(clientData);
+
                 if (!remoteConnected) {
                     var remotePort = extractRemotePort(clientData);
                     var remoteAddr = extractRemoteAddress(clientData);
@@ -34,12 +37,12 @@ io.of('/').on('connection', function(socket) {
                         buf.writeInt16BE(remotePort, 8);
 
                         remoteConnected = true;
-                        remoteConnectSuccess(buf);
+                        remoteConnectSuccess(encryptor.encrypt(buf));
                         console.log(namespace + ': remote connected: ' +  remoteAddr + ":" +remotePort)
                     });
 
                     remoteSocket.on('data', function(data) {
-                        clientSocket.send(data);
+                        clientSocket.send(encryptor.encrypt(data));
                     });
 
                     remoteSocket.on('error', function(e) {
