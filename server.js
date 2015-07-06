@@ -6,7 +6,7 @@ var config = JSON.parse(fs.readFileSync('config.json'));
 var encryptor = new (require('./lib/encryptor'))(config.encryptMethod, config.encryptKey);
 
 var httpServer = require("http").createServer();
-httpServer.listen(config.serverPort, config.serverAddress, function(){
+httpServer.listen(process.env.PORT || config.serverPort, config.serverAddress, function(){
     var address = httpServer.address();
     return console.log("server listening at", address);
 });
