@@ -2,7 +2,7 @@ var fs = require('fs');
 var net = require('net');
 var config = JSON.parse(fs.readFileSync('config.json'));
 var ConnectionPool = require('./lib/connection-pool');
-var encryptor = new (require('./encryptor'))(config.encryptMethod, config.encryptKey);
+var encryptor = new (require('./lib/encryptor'))(config.encryptMethod, config.encryptKey);
 
 var serverUrl = 'http://' + config.serverAddress + ':' + config.serverPort;
 var connectionPool = new ConnectionPool(serverUrl);

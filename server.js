@@ -3,7 +3,7 @@ var net = require("net");
 var http = require('http');
 var Server = require('socket.io');
 var config = JSON.parse(fs.readFileSync('config.json'));
-var encryptor = new (require('./encryptor'))(config.encryptMethod, config.encryptKey);
+var encryptor = new (require('./lib/encryptor'))(config.encryptMethod, config.encryptKey);
 
 var httpServer = require("http").createServer();
 httpServer.listen(config.serverPort, config.serverAddress, function(){
