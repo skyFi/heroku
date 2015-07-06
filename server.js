@@ -22,7 +22,6 @@ io.of('/').on('connection', function(socket) {
             var remoteSocket = null;
 
             clientSocket.on('message', function(clientData, remoteConnectSuccess) {
-                console.log('encrypted client data: \n\r' + clientData);
                 clientData = encryptor.decrypt(clientData);
 
                 if (!remoteConnected) {
