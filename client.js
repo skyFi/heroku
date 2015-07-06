@@ -25,6 +25,7 @@ var localServer = net.createServer(function(socket) {
 
     connectionPool.getConnection().createSession(function(session) {
         session.on('message', function(data){
+            console.log(session.id + ": sending data to client: data length = " + data);
             socket.write(data);
         });
 
@@ -33,6 +34,7 @@ var localServer = net.createServer(function(socket) {
         });
 
         socket.on('close', function(){
+            console.log(session.id + ": client socket is closed")
             session.close();
         });
 
@@ -45,7 +47,6 @@ var localServer = net.createServer(function(socket) {
         }
 
         function processData(data) {
-            console.log('process data :' + data.length);
             if (session.state == 'init') {
                 console.log(session.id + ": is authenticating...");
                 session.authenticate(data, function(result){
@@ -55,7 +56,6 @@ var localServer = net.createServer(function(socket) {
                 console.log(session.id + ": is connecting to server side...");
                 session.remoteConnect(data, function(result) {
                     socket.write(result);
-                    console.log('remote connect result: ' + result);
                 });
             } else if (session.state == 'transfer'){
                 session.send(data);

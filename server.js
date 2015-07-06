@@ -26,7 +26,7 @@ io.of('/').on('connection', function(socket) {
                     var remotePort = extractRemotePort(data);
                     var remoteAddr = extractRemoteAddress(data);
 
-                    console.log('remote url ' +  remoteAddr + ":" +remotePort);
+                    console.log('connecting to remote: ' +  remoteAddr + ":" +remotePort);
                     remoteSocket = net.connect(remotePort, remoteAddr, function() {
                         var buf = new Buffer(10);
                         buf.write("\u0005\u0000\u0000\u0001", 0, 4, "binary");
@@ -35,10 +35,10 @@ io.of('/').on('connection', function(socket) {
 
                         remoteConnected = true;
                         remoteConnectSuccess(buf);
+                        console.log('remote connected: ' +  remoteAddr + ":" +remotePort)
                     });
 
                     remoteSocket.on('data', function(data) {
-                        console.log('remote response data: ' + data.length);
                         clientSocket.send(data);
                     });
 
@@ -49,7 +49,15 @@ io.of('/').on('connection', function(socket) {
                         remoteSocket = null;
                     });
 
-                    clientSocket.on('close', function() {
+                    remoteSocket.on('close', function(){
+                        console.log('remote close connection: ' +  remoteAddr + ":" +remotePort);
+                        remoteConnected = false;
+                        clientSocket.disconnect();
+                    });
+
+                    clientSocket.on('disconnect', function() {
+                        console.log('client close remote connection: ' +  remoteAddr + ":" +remotePort);
+                        remoteConnected = false;
                         remoteSocket.end();
                         remoteSocket = null;
                     });
