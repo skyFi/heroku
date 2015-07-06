@@ -5,7 +5,7 @@ var Server = require('socket.io');
 var config = JSON.parse(fs.readFileSync('config.json'));
 var encryptor = new (require('./lib/encryptor'))(config.encryptMethod, config.encryptKey);
 
-var debug = process.env.DEBUG;
+var debug = process.env.WALKER_DEBUG;
 
 var httpServer = require("http").createServer();
 httpServer.listen(process.env.PORT || config.serverPort, config.serverAddress, function(){
